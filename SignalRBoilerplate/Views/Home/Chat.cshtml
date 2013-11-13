@@ -3,40 +3,44 @@
 }
 <h1>Chat example</h1>
 
+<div style="display:none" data-bind="visible: true">
 
-<div class="alert alert-info" data-bind="visible: !connected()">
-    You are now connected to the chat. Please enter your name:
-    <div class="row">
-        <div class="col-lg-4">
+    <div class="alert alert-info">
+        <div data-bind="visible: !connected()">
+            You are now connected to the chat. Please enter your name:
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-bind="value: name" placeholder="Your name" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" data-bind="click: connect">Enter</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-bind="visible: connected">Welcome <strong data-bind="text: name"></strong></div>
+    </div>
+
+    <div class="row" data-bind="visible: connected">
+        <div class="col-lg-6">
             <div class="input-group">
-                <input type="text" class="form-control" data-bind="value: name" placeholder="Your name" />
+                <input type="text" class="form-control" data-bind="value: message" placeholder="Enter your message" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" data-bind="click: connect">Enter</button>
+                    <button class="btn btn-default" data-bind="click: sendMessage">Send</button>
                 </span>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row" data-bind="visible: connected">
-    <div class="col-lg-6">
-        <div class="input-group">
-            <input type="text" class="form-control" data-bind="value: message" placeholder="Message" />
-            <span class="input-group-btn">
-                <button class="btn btn-default" data-bind="click: sendMessage">Send</button>
-            </span>
+    <div class="row">
+        <div class="col-lg-6">
+            <ul data-bind="foreach: messages" class="list-group">
+                <li class="list-group-item"><strong data-bind="text: name"></strong>: <span data-bind="text: message"></span></li>
+            </ul>
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-lg-6">
-        <ul data-bind="foreach: messages">
-            <li><strong data-bind="text: name"></strong>: <span data-bind="text: message"></span></li>
-        </ul>
-    </div>
-</div>
-
 
 @section scripts
 {
@@ -63,8 +67,9 @@
             };
 
             Model.prototype = {
-                sendMessage: function() {
+                sendMessage: function () {
                     chatHub.server.send(this.name(), this.message());
+                    this.message('');
                 },
                 addMessage: function (name, message) {
                     this.messages.push({name : name, message : message});
